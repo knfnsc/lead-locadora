@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { LoginCredentials } from "../models/login-credentials";
-import { PublicUser } from "../models/user";
 import { UserService } from "./user.service";
-import { UrlSegment } from "@angular/router";
 
 @Injectable({
   providedIn: "root",
@@ -10,27 +9,20 @@ import { UrlSegment } from "@angular/router";
 export class AuthService {
   private activeToken: string;
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private router: Router) {
     this.activeToken = localStorage.getItem("token") || "";
   }
 
   isAutheticated(): boolean {
-    const user = this.userService.getUserByToken(this.activeToken);
-    if (user) {
-      return true;
-    }
-    return false;
+    return !!this.userService.getUserByToken(this.activeToken);
   }
 
-  isAdmin(): boolean {
+  isAdmin(): boolean | undefined {
     const user = this.userService.getUserByToken(this.activeToken);
-    if (user) {
-      return user.isAdmin;
-    }
-    return false;
+    return user?.isAdmin;
   }
 
-  login(credentials: LoginCredentials): PublicUser | null {
+  login(credentials: LoginCredentials): boolean {
     const user = this.userService.getUserByCredentials(
       credentials.user,
       credentials.password
@@ -38,19 +30,15 @@ export class AuthService {
     if (user) {
       this.activeToken = user.token;
       localStorage.setItem("token", this.activeToken);
-      return {
-        id: user.id,
-        name: user.name,
-        isAdmin: user.isAdmin,
-        createdAt: user.createdAt,
-      };
+      this.router.navigate([""]);
+      return true;
     }
-
-    return null;
+    return false;
   }
 
   logout(): void {
     this.activeToken = "";
     localStorage.setItem("token", this.activeToken);
+    this.router.navigate(["login"]);
   }
 }

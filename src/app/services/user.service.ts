@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { User } from "../models/user";
-import { find } from "rxjs";
 
 const USERS: User[] = [
   {
