@@ -12,83 +12,53 @@ import { MovieService } from "../services/movie.service";
         *ngFor="let movie of movies"
         [routerLink]="['movies/', movie.id]"
       >
-        <img
-          class="poster"
-          [alt]="movie.title"
-          [src]="movie?.posterURL"
-          width="240"
-          height="345"
-        />
-        <div class="info">
-          <h2 class="title">{{ movie.title }}</h2>
-          <h3 class="director">{{ movie.director }}</h3>
-        </div>
+        <img [alt]="movie.title" [src]="movie.posterURL" />
+        <button class="favourite">⭐</button>
       </div>
     </main>
   `,
   styles: [
     `
       main {
-        font-size: 1.25rem;
-
-        margin: 20px;
+        margin: 20px 100px;
 
         display: flex;
         flex-wrap: wrap;
-        row-gap: 10px;
-        column-gap: 10px;
-      }
-    `,
-    `
-      @media (max-width: 580px) {
-        main {
-          justify-content: center;
-        }
+        justify-content: center;
+        gap: 20px;
       }
     `,
     `
       .card {
-        display: flex;
-        flex-direction: column;
+        position: relative;
 
-        padding: 12px;
+        aspect-ratio: 27 / 40;
+        height: calc((100vh - 60px) / 2);
 
-        cursor: pointer;
-
-        background-color: rgb(245, 245, 245);
         border-radius: 7px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+        img {
+          width: 100%;
+          height: 100%;
+          border-radius: inherit;
+        }
 
         &:hover {
-          background-color: rgb(220, 220, 220);
+          cursor: pointer;
 
-          .title {
-            text-decoration: underline;
-            text-decoration-thickness: 1px;
-          }
+          outline: 2px dotted lightgrey;
         }
       }
     `,
     `
-      .poster {
-        border-radius: 7px;
-        border: 2px solid rgb(200, 200, 200);
-      }
-    `,
-    `
-      .info {
-        margin-top: 10px;
-      }
-    `,
-    `
-      .title {
-        text-transform: uppercase;
-        font-weight: bolder;
-      }
-    `,
-    `
-      .director {
-        font-style: italic;
-        color: grey;
+      .favourite {
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        z-index: 2;
+        background: none;
+        border: none;
       }
     `,
   ],
