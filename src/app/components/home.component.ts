@@ -6,7 +6,7 @@ import { MovieService } from "../services/movie.service";
   selector: "app-home",
   template: `
     <app-sidebar></app-sidebar>
-    <main>
+    <div class="movies">
       <div
         class="card"
         *ngFor="let movie of movies"
@@ -15,11 +15,11 @@ import { MovieService } from "../services/movie.service";
         <img [alt]="movie.title" [src]="movie.posterURL" />
         <button class="favourite">⭐</button>
       </div>
-    </main>
+    </div>
   `,
   styles: [
     `
-      main {
+      .movies {
         margin: 20px 100px;
 
         display: flex;
@@ -33,7 +33,7 @@ import { MovieService } from "../services/movie.service";
         position: relative;
 
         aspect-ratio: 27 / 40;
-        height: calc((100vh - 60px) / 2);
+        height: 360px;
 
         border-radius: 7px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -56,7 +56,7 @@ import { MovieService } from "../services/movie.service";
         position: absolute;
         bottom: 6px;
         right: 6px;
-        z-index: 2;
+        z-index: 1;
         background: none;
         border: none;
       }

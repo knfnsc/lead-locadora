@@ -3,6 +3,7 @@ export interface Movie {
   title: string;
   director: string;
   releaseDate: Date;
-  rating: number;
+  synopsis?: string;
+  rating?: number;
   posterURL?: string;
 }
