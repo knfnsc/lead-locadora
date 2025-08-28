@@ -10,6 +10,7 @@ import { UserSeatchComponent } from "./components/user-seatch.component";
 import { UserDetailsComponent } from "./components/user-details.component";
 import { MovieDetailsComponent } from "./components/movie-details.component";
 import { SidebarComponent } from "./components/sidebar.component";
+import { NewMovieComponent } from './components/new-movie.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { SidebarComponent } from "./components/sidebar.component";
     UserDetailsComponent,
     MovieDetailsComponent,
     SidebarComponent,
+    NewMovieComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
   providers: [],

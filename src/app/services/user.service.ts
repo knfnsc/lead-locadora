@@ -3,14 +3,24 @@ import { User } from "../models/user";
 
 const USERS: User[] = [
   {
-    id: 0,
+    id: 1,
     name: "kauan",
     password: "senha123",
     createdAt: new Date(),
     isAdmin: true,
-    token: "token",
+    token: "1",
+  },
+  {
+    id: 2,
+    name: "cara",
+    password: "senha123",
+    createdAt: new Date(),
+    isAdmin: false,
+    token: "2",
+    favoritesID: [],
   },
 ];
+
 @Injectable({
   providedIn: "root",
 })

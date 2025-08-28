@@ -7,6 +7,10 @@ import { MovieService } from "../services/movie.service";
   selector: "app-movie-details",
   template: `
     <div class="movie" *ngIf="movie; else notFound">
+      <div class="poster">
+        <img [alt]="movie.title" [src]="movie.posterURL" />
+        <p>Nota: {{ movie.rating }}</p>
+      </div>
       <div class="info">
         <h1 class="title">
           {{ movie.title }}
@@ -18,10 +22,6 @@ import { MovieService } from "../services/movie.service";
           {{ movie.synopsis || "Sinopse não encontrada." }}
         </p>
       </div>
-      <div class="poster">
-        <img [alt]="movie.title" [src]="movie.posterURL" />
-        <p>Nota: {{ movie.rating }}</p>
-      </div>
     </div>
     <ng-template #notFound>
       <h1>Ih, esse aí eu desconheço...</h1>
@@ -32,6 +32,7 @@ import { MovieService } from "../services/movie.service";
       .movie {
         display: flex;
         flex-wrap: wrap;
+        flex-direction: row-reverse;
         justify-content: space-between;
       }
     `,
@@ -42,15 +43,14 @@ import { MovieService } from "../services/movie.service";
         display: flex;
         flex-wrap: wrap;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
 
         img {
           aspect-ratio: 27 / 40;
           height: 65vh;
 
-          border-radius: 1%;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65);
+          border-radius: 2vmin;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 
           margin-bottom: 5px;
         }
@@ -58,13 +58,12 @@ import { MovieService } from "../services/movie.service";
     `,
     `
       .info {
-        width: 65%;
+        align-self: flex-start;
         font-size: 2rem;
       }
     `,
     `
       .title {
-        margin-bottom: -10px;
         text-transform: uppercase;
         word-wrap: break-word;
         font-size: 3em;

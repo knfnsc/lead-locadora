@@ -2,14 +2,21 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { HomeComponent } from "./components/home.component";
 import { AuthGuard } from "./guards/auth.guard";
+import { AdminGuard } from "./guards/admin.guard";
 import { LoginComponent } from "./components/login.component";
 import { MovieDetailsComponent } from "./components/movie-details.component";
+import { NewMovieComponent } from "./components/new-movie.component";
 
 const routes: Routes = [
   {
     path: "",
     component: HomeComponent,
     canActivate: [AuthGuard],
+  },
+  {
+    path: "movies/new",
+    component: NewMovieComponent,
+    canActivate: [AuthGuard, AdminGuard],
   },
   {
     path: "movies/:id",
