@@ -9,7 +9,7 @@ interface BaseUser {
 
 interface RegularUser extends BaseUser {
   readonly isAdmin: false;
-  favoriteID: number;
+  favoriteID?: number;
 }
 
 interface AdminUser extends BaseUser {

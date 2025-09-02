@@ -17,7 +17,7 @@ const USERS: User[] = [
     createdAt: new Date(),
     isAdmin: false,
     token: "2",
-    favoriteID: 2,
+    favoriteID: 3,
   },
 ];
 

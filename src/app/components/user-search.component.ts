@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { User } from "../models/user";
+import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
 
 @Component({
@@ -11,6 +12,7 @@ import { UserService } from "../services/user.service";
     <ul>
       <li *ngFor="let user of filteredUsers" [routerLink]="[user.id]">
         {{ user.name }} | Criado em: {{ user.createdAt.toLocaleString() }}
+        <button *ngIf="isAdmin" [routerLink]="[user.id, 'edit']">Editar</button>
       </li>
     </ul>
     <p *ngIf="filteredUsers.length === 0">Nenhum usuário encontrado</p>
@@ -22,7 +24,12 @@ export class UserSearchComponent implements OnInit {
   filteredUsers: User[] = [];
   searchControl = new FormControl("");
 
-  constructor(private userService: UserService) {}
+  isAdmin = this.authService.isAdmin();
+
+  constructor(
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.users = this.userService.getUsers();

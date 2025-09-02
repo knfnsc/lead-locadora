@@ -7,13 +7,10 @@ import { MovieService } from "../services/movie.service";
   template: `
     <app-sidebar></app-sidebar>
     <ul class="movies">
-      <li
-        class="card"
-        *ngFor="let movie of movies"
-        [routerLink]="['movies', movie.id]"
-      >
+      <li class="card" *ngFor="let movie of movies">
         <img [src]="movie.posterURL" />
-        <h1>{{ movie.title }}</h1>
+        <h1 [routerLink]="['/movies', movie.id]">{{ movie.title }}</h1>
+        <button [routerLink]="['/movies', movie.id, 'edit']">Editar</button>
       </li>
     </ul>
   `,

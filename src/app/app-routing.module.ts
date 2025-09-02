@@ -15,6 +15,7 @@ const routes: Routes = [
     component: HomeComponent,
     canActivate: [AuthGuard],
   },
+
   {
     path: "movies/new",
     component: NewMoviePageComponent,
@@ -26,6 +27,15 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: "movies/:id/edit",
+    component: MovieDetailsComponent,
+    canActivate: [AuthGuard, AdminGuard],
+    data: {
+      editing: true,
+    },
+  },
+
+  {
     path: "users",
     component: UserSearchComponent,
     canActivate: [AuthGuard, AdminGuard],
@@ -35,6 +45,15 @@ const routes: Routes = [
     component: UserDetailsComponent,
     canActivate: [AuthGuard, AdminGuard],
   },
+  {
+    path: "users/:id/edit",
+    component: UserDetailsComponent,
+    canActivate: [AuthGuard, AdminGuard],
+    data: {
+      editing: true,
+    },
+  },
+
   {
     path: "login",
     component: LoginComponent,
