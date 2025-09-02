@@ -60,8 +60,8 @@ export class NewMoviePageComponent {
       title: ["", [Validators.required, notEmptyValidator]],
       director: ["", [Validators.required, notEmptyValidator]],
       releaseDate: ["", Validators.required],
-      synopsis: [""],
-      posterURL: [""],
+      synopsis: ["", [Validators.required, notEmptyValidator]],
+      posterURL: ["", [Validators.required, notEmptyValidator]],
     });
   }
 
@@ -73,8 +73,8 @@ export class NewMoviePageComponent {
         title: title.trim(),
         director: director.trim(),
         releaseDate,
-        synopsis: synopsis?.trim() || "",
-        posterURL: posterURL?.trim() || "",
+        synopsis: synopsis.trim() || "",
+        posterURL: posterURL.trim() || "",
       });
       this.router.navigate(["/"]);
     }

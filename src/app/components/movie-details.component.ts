@@ -15,11 +15,11 @@ import { AuthService } from "../services/auth.service";
         {{ movie.title }}
       </h1>
       <h2>{{ movie.director }}</h2>
-      <h3>{{ movie.releaseDate.toLocaleDateString() }}</h3>
+      <h3>{{ movie.releaseDate }}</h3>
       <p>{{ movie.synopsis }}</p>
       <button
         *ngIf="isAdmin"
-        [routerLink]="isEditing ? ['..'] : ['edit']"
+        [routerLink]="[isEditing ? '..' : 'edit']"
         (click)="onEdit()"
       >
         {{ !isEditing ? "Editar" : "Parar de editar" }}
@@ -33,7 +33,7 @@ import { AuthService } from "../services/auth.service";
 })
 export class MovieDetailsComponent implements OnDestroy {
   movie: Movie | null = null;
-  private subscription: Subscription;
+  private subscription = new Subscription();
 
   isAdmin = this.authService.isAdmin();
   isEditing = false;
@@ -43,14 +43,20 @@ export class MovieDetailsComponent implements OnDestroy {
     private movieService: MovieService,
     private activatedRoute: ActivatedRoute
   ) {
-    this.subscription = this.activatedRoute.params.subscribe((params) => {
-      const movieID = parseInt(params["id"]);
-      this.movie = isNaN(movieID) ? null : this.movieService.getMovie(movieID);
-    });
+    this.subscription.add(
+      this.activatedRoute.params.subscribe((params) => {
+        const movieID = parseInt(params["id"]);
+        this.movie = isNaN(movieID)
+          ? null
+          : this.movieService.getMovie(movieID);
+      })
+    );
 
-    this.activatedRoute.data.subscribe((data) => {
-      this.isEditing = data["editing"];
-    });
+    this.subscription.add(
+      this.activatedRoute.data.subscribe((data) => {
+        this.isEditing = data["editing"];
+      })
+    );
   }
 
   ngOnDestroy(): void {

@@ -40,19 +40,23 @@ export class UserDetailsComponent implements OnDestroy {
     private movieService: MovieService,
     private activatedRoute: ActivatedRoute
   ) {
-    this.subscription = this.activatedRoute.params.subscribe((params) => {
-      const userID = parseInt(params["id"]);
-      if (!isNaN(userID)) {
-        this.user = this.userService.getUser(userID);
-        if (this.user && !this.user.isAdmin && this.user.favoriteID) {
-          this.favorite = this.movieService.getMovie(this.user.favoriteID);
+    this.subscription.add(
+      this.activatedRoute.params.subscribe((params) => {
+        const userID = parseInt(params["id"]);
+        if (!isNaN(userID)) {
+          this.user = this.userService.getUser(userID);
+          if (this.user && !this.user.isAdmin && this.user.favoriteID) {
+            this.favorite = this.movieService.getMovie(this.user.favoriteID);
+          }
         }
-      }
-    });
+      })
+    );
 
-    this.activatedRoute.data.subscribe((data) => {
-      this.isEditing = data["editing"];
-    });
+    this.subscription.add(
+      this.activatedRoute.data.subscribe((data) => {
+        this.isEditing = data["editing"];
+      })
+    );
   }
 
   ngOnDestroy(): void {

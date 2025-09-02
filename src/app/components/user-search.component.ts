@@ -11,7 +11,7 @@ import { UserService } from "../services/user.service";
     <input type="text" [formControl]="searchControl" (input)="onSearch()" />
     <ul>
       <li *ngFor="let user of filteredUsers" [routerLink]="[user.id]">
-        {{ user.name }} | Criado em: {{ user.createdAt.toLocaleString() }}
+        {{ user.name }} | Criado em: {{ user.createdAt }}
         <button *ngIf="isAdmin" [routerLink]="[user.id, 'edit']">Editar</button>
       </li>
     </ul>
