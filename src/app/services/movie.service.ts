@@ -9,8 +9,7 @@ export class MovieService {
   constructor(private db: DatabaseService) {}
 
   async addNewMovie(movie: Omit<Movie, "id">): Promise<number> {
-    const id = await this.db.movies.add(movie as Movie);
-    return id as number;
+    return (await this.db.movies.add(movie as Movie)) as number;
   }
 
   async getMovies(): Promise<Movie[]> {
@@ -18,19 +17,14 @@ export class MovieService {
   }
 
   async getMovie(id: number): Promise<Movie | null> {
-    const movie = await this.db.movies.get(id);
-    return movie || null;
+    return (await this.db.movies.get(id)) || null;
   }
 
   async updateMovie(updatedMovie: Movie): Promise<void> {
-    const existingMovie = await this.db.movies.get(updatedMovie.id);
-
     await this.db.movies.put(updatedMovie);
   }
 
   async deleteMovie(id: number): Promise<void> {
-    const existingMovie = await this.db.movies.get(id);
-
     await this.db.movies.delete(id);
   }
 }

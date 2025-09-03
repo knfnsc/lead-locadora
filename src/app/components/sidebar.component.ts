@@ -10,13 +10,47 @@ import { AuthService } from "../services/auth.service";
         <button *ngIf="isAdmin$ | async" [routerLink]="['/movies/new']">
           Novo filme
         </button>
-        <a *ngIf="isAdmin$ | async" [routerLink]="['/users']">Usuários</a>
-        <a *ngIf="!(isAdmin$ | async)" [routerLink]="['/']">Ver novidades</a>
-        <button (click)="onLogout()">Sair</button>
+        <button *ngIf="isAdmin$ | async" [routerLink]="['/users']">
+          Usuários
+        </button>
+        <button *ngIf="!(isAdmin$ | async)" [routerLink]="['/']">
+          Ver novidades
+        </button>
+        <button class="logout" (click)="onLogout()">Sair</button>
       </nav>
     </aside>
   `,
-  styles: [],
+  styles: [
+    `
+      aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 100vh;
+        background-color: #f0f0f0;
+        padding: 1rem;
+      }
+
+      nav {
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+
+        & > button {
+          width: 100%;
+          padding: 0.5rem;
+        }
+      }
+
+      .logout {
+        margin-top: auto;
+      }
+    `,
+  ],
 })
 export class SidebarComponent implements OnInit {
   isAdmin$!: Observable<boolean>;

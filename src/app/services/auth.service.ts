@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { UserService } from "./user.service";
+import { User } from "../models/user";
 
 @Injectable({
   providedIn: "root",
@@ -13,8 +14,7 @@ export class AuthService {
   }
 
   async isAuthenticated(): Promise<boolean> {
-    const user = await this.userService.getUserByToken(this.activeToken);
-    return !!user;
+    return !!(await this.userService.getUserByToken(this.activeToken));
   }
 
   async isAdmin(): Promise<boolean> {
@@ -23,21 +23,16 @@ export class AuthService {
   }
 
   async login(username: string, password: string): Promise<boolean> {
-    try {
-      const userData = await this.userService.getUserByCredentials(
-        username,
-        password
-      );
-      if (!userData) return false;
+    const userData = await this.userService.getUserByCredentials(
+      username,
+      password
+    );
+    if (!userData) return false;
 
-      this.activeToken = userData.token;
-      sessionStorage.setItem("token", this.activeToken);
-      this.router.navigate(["/"]);
-      return true;
-    } catch (error) {
-      console.error("Login error:", error);
-      return false;
-    }
+    this.activeToken = userData.token;
+    sessionStorage.setItem("token", this.activeToken);
+    this.router.navigate(["/"]);
+    return true;
   }
 
   logout(): void {
@@ -46,7 +41,7 @@ export class AuthService {
     this.router.navigate(["/login"]);
   }
 
-  getActiveToken(): string {
-    return this.activeToken;
+  async getCurrentUser(): Promise<User | null> {
+    return this.userService.getUserByToken(this.activeToken);
   }
 }

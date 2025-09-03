@@ -47,21 +47,17 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Set up admin check as Observable
     this.isAdmin$ = from(this.authService.isAdmin());
 
-    // Subscribe to route parameters
     this.subscription.add(
       this.activatedRoute.params.subscribe((params) => {
         const movieID = parseInt(params["id"]);
         if (!isNaN(movieID)) {
-          // Fixed the logic - was checking isNaN but should check !isNaN
           this.movie$ = from(this.movieService.getMovie(movieID));
         }
       })
     );
 
-    // Subscribe to route data for editing mode
     this.subscription.add(
       this.activatedRoute.data.subscribe((data) => {
         this.isEditing = data["editing"] || false;
@@ -79,6 +75,6 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
 
   async onDelete(movie: Movie): Promise<void> {
     await this.movieService.deleteMovie(movie.id);
-    this.router.navigate([""]);
+    this.router.navigate(["/"]);
   }
 }

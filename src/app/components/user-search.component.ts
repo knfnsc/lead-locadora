@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormControl } from "@angular/forms";
+import { Router } from "@angular/router";
 import { Observable, from } from "rxjs";
 import { User } from "../models/user";
 import { AuthService } from "../services/auth.service";
@@ -9,24 +10,68 @@ import { UserService } from "../services/user.service";
   selector: "app-user-search",
   template: `
     <app-sidebar></app-sidebar>
-    <input type="text" [formControl]="searchControl" (input)="onSearch()" />
-    <ul>
-      <li *ngFor="let user of filteredUsers" [routerLink]="[user.id]">
-        {{ user.name }} | Criado em: {{ user.createdAt | date }}
+    <input
+      type="text"
+      id="search"
+      [formControl]="searchControl"
+      (input)="onSearch()"
+    />
+    <ol>
+      <li *ngFor="let user of filteredUsers">
+        <h2 [routerLink]="[user.id]">
+          {{ user.name }}
+        </h2>
         <button *ngIf="isAdmin$ | async" [routerLink]="[user.id, 'edit']">
           Editar
         </button>
+        <button *ngIf="isAdmin$ | async" (click)="onDelete(user)">
+          Excluir
+        </button>
       </li>
-    </ul>
+    </ol>
     <p *ngIf="filteredUsers.length === 0">Nenhum usuário encontrado</p>
   `,
-  styles: [],
+  styles: [
+    `
+      #search {
+        margin-bottom: 2rem;
+        height: 2rem;
+        min-width: 200px;
+        font-size: 1rem;
+        outline: 1px solid #c1c1c1;
+        border-radius: 8px;
+      }
+
+      ol {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+      }
+
+      li {
+        background: #c1c1c1;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        text-align: left;
+        cursor: pointer;
+
+        & > h2 {
+          font-size: 1.5rem;
+          font-weight: bolder;
+          margin: 0;
+          margin-bottom: 0.5rem;
+        }
+      }
+    `,
+  ],
 })
 export class UserSearchComponent implements OnInit {
   users: User[] = [];
   filteredUsers: User[] = [];
   searchControl = new FormControl("");
+
   isAdmin$!: Observable<boolean>;
+  isEditing = false;
 
   constructor(
     private authService: AuthService,
@@ -36,12 +81,8 @@ export class UserSearchComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.isAdmin$ = from(this.authService.isAdmin());
 
-    try {
-      this.users = await this.userService.getUsers();
-      this.filteredUsers = this.users;
-    } catch (error) {
-      console.error("Error loading users:", error);
-    }
+    this.users = await this.userService.getUsers();
+    this.filteredUsers = this.users;
   }
 
   onSearch(): void {
@@ -51,5 +92,14 @@ export class UserSearchComponent implements OnInit {
       : this.users.filter((user) =>
           user.name.toLowerCase().includes(search.toLowerCase().trim())
         );
+  }
+
+  async onDelete(user: User): Promise<void> {
+    await this.userService.deleteUser(user.id);
+    if (await this.authService.getCurrentUser() === user.id) {
+      await this.authService.logout();
+    }
+    this.users = await this.userService.getUsers();
+    this.onSearch();
   }
 }

@@ -2,15 +2,17 @@ import { Component } from "@angular/core";
 
 @Component({
   selector: "app-root",
-  template: ` <main><router-outlet></router-outlet></main> `,
+  template: ` <router-outlet></router-outlet> `,
   styles: [
     `
-      main {
+      :host {
         margin: 0;
-        padding: 5vh;
+        padding: 1rem;
+        min-height: 100vh;
+
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: start;
         text-align: center;
       }
     `,
