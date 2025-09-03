@@ -11,11 +11,11 @@ export class DatabaseService extends Dexie {
   users!: Table<User>;
 
   constructor() {
-    super("LeadCadoraApp");
+    super("LeadCadora");
 
     this.version(1).stores({
       movies: "++id, title, director, releaseDate, synopsis, posterURL",
-      users: "++id, name, password, createdAt, isAdmin, token, favoriteID",
+      users: "++id, [name+password], createdAt, isAdmin, token, favoriteID",
     });
 
     this.on("ready", () => {

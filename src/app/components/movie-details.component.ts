@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, Subscription, from } from "rxjs";
 import { Movie } from "../models/movie";
 import { MovieService } from "../services/movie.service";
@@ -22,6 +22,9 @@ import { AuthService } from "../services/auth.service";
       >
         {{ !isEditing ? "Editar" : "Parar de editar" }}
       </button>
+      <button *ngIf="isAdmin$ | async" (click)="onDelete(movie)">
+        Deletar
+      </button>
     </div>
     <ng-template #movieNotFound>
       <p>Ih, esse filme aí eu não conheço...</p>
@@ -39,7 +42,8 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private movieService: MovieService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -71,5 +75,10 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
 
   onEdit(): void {
     this.isEditing = !this.isEditing;
+  }
+
+  async onDelete(movie: Movie): Promise<void> {
+    await this.movieService.deleteMovie(movie.id);
+    this.router.navigate([""]);
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, Subscription, from, switchMap, of } from "rxjs";
 import { User, RegularUser } from "../models/user";
 import { Movie } from "../models/movie";
@@ -38,7 +38,8 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private movieService: MovieService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -47,23 +48,25 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.activatedRoute.params.subscribe((params) => {
         const userID = parseInt(params["id"]);
-        if (!isNaN(userID)) {
-          this.user$ = from(this.userService.getUser(userID));
-
-          this.favorite$ = this.user$.pipe(
-            switchMap((user) => {
-              if (
-                user &&
-                !user.isAdmin &&
-                this.isRegularUser(user) &&
-                user.favoriteID
-              ) {
-                return from(this.movieService.getMovie(user.favoriteID));
-              }
-              return of(null);
-            })
-          );
+        if (isNaN(userID)) {
+          return;
         }
+
+        this.user$ = from(this.userService.getUser(userID));
+
+        this.favorite$ = this.user$.pipe(
+          switchMap((user) => {
+            if (
+              user &&
+              !user.isAdmin &&
+              this.isRegularUser(user) &&
+              user.favoriteID
+            ) {
+              return from(this.movieService.getMovie(user.favoriteID));
+            }
+            return of(null);
+          })
+        );
       })
     );
 
@@ -84,5 +87,6 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
 
   async onDelete(user: User): Promise<void> {
     await this.userService.deleteUser(user.id);
+    this.router.navigate(["/users"]);
   }
 }

@@ -6,10 +6,11 @@ import {
   ValidationErrors,
   Validators,
 } from "@angular/forms";
-import { MovieService } from "../services/movie.service";
 import { Router } from "@angular/router";
+import { MovieService } from "../services/movie.service";
 
-function notEmptyValidator(control: AbstractControl): ValidationErrors | null {
+
+function notEmpty(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   return value === null ||
     value === undefined ||
@@ -23,10 +24,10 @@ function notEmptyValidator(control: AbstractControl): ValidationErrors | null {
   template: `
     <app-sidebar></app-sidebar>
     <form [formGroup]="form" (ngSubmit)="onCreate()">
-      <label for="title">Título*</label><br />
+      <label for="title">Título</label><br />
       <input id="title" type="text" formControlName="title" /><br />
 
-      <label for="director">Diretor*</label><br />
+      <label for="director">Diretor</label><br />
       <input id="director" type="text" formControlName="director" /><br />
 
       <label for="release-date">Data de lançamento*</label><br />
@@ -36,11 +37,11 @@ function notEmptyValidator(control: AbstractControl): ValidationErrors | null {
         formControlName="releaseDate"
       /><br />
 
-      <label for="synopsis">Sinopse:</label><br />
+      <label for="synopsis">Sinopse</label><br />
       <textarea id="synopsis" type="text" formControlName="synopsis"></textarea
       ><br />
 
-      <label for="poster-url">Link para o poster:</label><br />
+      <label for="poster-url">Link para o poster</label><br />
       <input id="poster-url" type="url" formControlName="posterURL" /><br />
 
       <button type="submit" [disabled]="!form.valid">Criar</button>
@@ -57,11 +58,11 @@ export class NewMoviePageComponent {
     private router: Router
   ) {
     this.form = this.fb.group({
-      title: ["", [Validators.required, notEmptyValidator]],
-      director: ["", [Validators.required, notEmptyValidator]],
+      title: ["", [Validators.required, notEmpty]],
+      director: ["", [Validators.required, notEmpty]],
       releaseDate: ["", Validators.required],
-      synopsis: ["", [Validators.required, notEmptyValidator]],
-      posterURL: ["", [Validators.required, notEmptyValidator]],
+      synopsis: ["", [Validators.required, notEmpty]],
+      posterURL: ["", [Validators.required, notEmpty]],
     });
   }
 

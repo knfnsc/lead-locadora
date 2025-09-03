@@ -22,7 +22,8 @@ export class UserService {
     password: string
   ): Promise<User | null> {
     const user = await this.db.users
-      .where({ name: name, password: password })
+      .where("[name+password]")
+      .equals([name, password])
       .first();
     return user || null;
   }
