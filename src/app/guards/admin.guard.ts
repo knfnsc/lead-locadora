@@ -8,7 +8,9 @@ import { AuthService } from "../services/auth.service";
 export class AdminGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean | UrlTree {
-    return this.authService.isAdmin() || this.router.createUrlTree(["login"]);
+  async canActivate(): Promise<boolean | UrlTree> {
+    return (
+      (await this.authService.isAdmin()) || this.router.createUrlTree(["login"])
+    );
   }
 }

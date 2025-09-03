@@ -8,9 +8,9 @@ import { AuthService } from "../services/auth.service";
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean | UrlTree {
+  async canActivate(): Promise<boolean | UrlTree> {
     return (
-      this.authService.isAuthenticated() || this.router.createUrlTree(["login"])
+      await this.authService.isAuthenticated() || this.router.createUrlTree(["login"])
     );
   }
 }

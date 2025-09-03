@@ -9,30 +9,44 @@ export class AuthService {
   private activeToken: string;
 
   constructor(private userService: UserService, private router: Router) {
-    this.activeToken = localStorage.getItem("token") || "";
+    this.activeToken = sessionStorage.getItem("token") || "";
   }
 
-  isAuthenticated(): boolean {
-    return !!this.userService.getUserByToken(this.activeToken);
+  async isAuthenticated(): Promise<boolean> {
+    const user = await this.userService.getUserByToken(this.activeToken);
+    return !!user;
   }
 
-  isAdmin(): boolean {
-    return this.userService.getUserByToken(this.activeToken)?.isAdmin || false;
+  async isAdmin(): Promise<boolean> {
+    const user = await this.userService.getUserByToken(this.activeToken);
+    return user?.isAdmin || false;
   }
 
-  login(user: string, password: string): boolean {
-    const userData = this.userService.getUserByCredentials(user, password);
-    if (!userData) return false;
+  async login(username: string, password: string): Promise<boolean> {
+    try {
+      const userData = await this.userService.getUserByCredentials(
+        username,
+        password
+      );
+      if (!userData) return false;
 
-    this.activeToken = userData.token;
-    localStorage.setItem("token", this.activeToken);
-    this.router.navigate(["/"]);
-    return true;
+      this.activeToken = userData.token;
+      sessionStorage.setItem("token", this.activeToken);
+      this.router.navigate(["/"]);
+      return true;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
+    }
   }
 
   logout(): void {
     this.activeToken = "";
-    localStorage.setItem("token", this.activeToken);
+    sessionStorage.setItem("token", this.activeToken);
     this.router.navigate(["/login"]);
+  }
+
+  getActiveToken(): string {
+    return this.activeToken;
   }
 }

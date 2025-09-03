@@ -7,12 +7,11 @@ import { Router } from "@angular/router";
   selector: "app-login",
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <label for="user">Usuário: </label>
-      <input type="text" formControlName="user" /><br />
+      <label for="user">Usuário:</label>
+      <input type="text" id="user" formControlName="user" />
 
-      <label for="password">Senha: </label>
-      <input type="password" formControlName="password" /><br />
-      <p *ngIf="error">{{ error }}</p>
+      <label for="password">Senha:</label>
+      <input type="password" id="password" formControlName="password" />
 
       <button type="submit" [disabled]="!form.valid">Entrar</button>
     </form>
@@ -21,7 +20,6 @@ import { Router } from "@angular/router";
 })
 export class LoginComponent implements OnInit {
   form: FormGroup;
-  error: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -29,30 +27,26 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {
     this.form = this.fb.group({
-      user: ["", Validators.required],
-      password: ["", Validators.required],
+      user: ["", [Validators.required, Validators.minLength(1)]],
+      password: ["", [Validators.required, Validators.minLength(1)]],
     });
   }
 
-  ngOnInit(): void {
-    try {
-      if (this.authService.isAuthenticated()) {
-        this.router.navigate(["/"]);
-      }
-    } catch (err) {
-      this.error = "Erro ao verificar autenticação. Tente novamente.";
-      console.error("Auth check error:", err);
+  async ngOnInit(): Promise<void> {
+    // Check if user is already authenticated
+    const isAuthenticated = await this.authService.isAuthenticated();
+    if (isAuthenticated) {
+      this.router.navigate(["/"]);
     }
   }
 
-  onSubmit(): void {
-    this.error = null;
+  async onSubmit(): Promise<void> {
+    if (!this.form.valid) {
+      return;
+    }
+
     const { user, password } = this.form.value;
 
-    if (this.authService.login(user.trim(), password)) {
-      this.router.navigate(["/"]);
-    } else {
-      this.error = "Credenciais inválidas";
-    }
+    await this.authService.login(user.trim(), password.trim());
   }
 }

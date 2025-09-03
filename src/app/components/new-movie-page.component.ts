@@ -65,18 +65,21 @@ export class NewMoviePageComponent {
     });
   }
 
-  onCreate(): void {
-    if (this.form.valid) {
-      const { title, director, releaseDate, synopsis, posterURL } =
-        this.form.value;
-      this.movieService.addNewMovie({
-        title: title.trim(),
-        director: director.trim(),
-        releaseDate,
-        synopsis: synopsis.trim() || "",
-        posterURL: posterURL.trim() || "",
-      });
-      this.router.navigate(["/"]);
+  async onCreate(): Promise<void> {
+    if (!this.form.valid) {
+      return;
     }
+    const { title, director, releaseDate, synopsis, posterURL } =
+      this.form.value;
+
+    await this.movieService.addNewMovie({
+      title: title.trim(),
+      director: director.trim(),
+      releaseDate,
+      synopsis: synopsis.trim(),
+      posterURL: posterURL.trim(),
+    });
+
+    this.router.navigate(["/"]);
   }
 }

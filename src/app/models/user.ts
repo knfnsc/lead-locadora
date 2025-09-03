@@ -7,12 +7,12 @@ interface BaseUser {
   readonly token: string;
 }
 
-interface RegularUser extends BaseUser {
+export interface RegularUser extends BaseUser {
   readonly isAdmin: false;
   favoriteID?: number;
 }
 
-interface AdminUser extends BaseUser {
+export interface AdminUser extends BaseUser {
   readonly isAdmin: true;
 }
 

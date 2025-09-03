@@ -1,6 +1,6 @@
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Observable, Subscription, from } from "rxjs";
 import { Movie } from "../models/movie";
 import { MovieService } from "../services/movie.service";
 import { AuthService } from "../services/auth.service";
@@ -9,16 +9,14 @@ import { AuthService } from "../services/auth.service";
   selector: "app-movie-details",
   template: `
     <app-sidebar></app-sidebar>
-    <div *ngIf="movie; else movieNotFound">
+    <div *ngIf="movie$ | async as movie; else movieNotFound">
       <img [alt]="movie.title" [src]="movie.posterURL" />
-      <h1>
-        {{ movie.title }}
-      </h1>
+      <h1>{{ movie.title }}</h1>
       <h2>{{ movie.director }}</h2>
-      <h3>{{ movie.releaseDate }}</h3>
+      <h3>{{ movie.releaseDate | date }}</h3>
       <p>{{ movie.synopsis }}</p>
       <button
-        *ngIf="isAdmin"
+        *ngIf="isAdmin$ | async"
         [routerLink]="[isEditing ? '..' : 'edit']"
         (click)="onEdit()"
       >
@@ -31,30 +29,38 @@ import { AuthService } from "../services/auth.service";
   `,
   styles: [],
 })
-export class MovieDetailsComponent implements OnDestroy {
-  movie: Movie | null = null;
-  private subscription = new Subscription();
-
-  isAdmin = this.authService.isAdmin();
+export class MovieDetailsComponent implements OnInit, OnDestroy {
+  movie$!: Observable<Movie | null>;
+  isAdmin$!: Observable<boolean>;
   isEditing = false;
+
+  private subscription = new Subscription();
 
   constructor(
     private authService: AuthService,
     private movieService: MovieService,
     private activatedRoute: ActivatedRoute
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    // Set up admin check as Observable
+    this.isAdmin$ = from(this.authService.isAdmin());
+
+    // Subscribe to route parameters
     this.subscription.add(
       this.activatedRoute.params.subscribe((params) => {
         const movieID = parseInt(params["id"]);
-        this.movie = isNaN(movieID)
-          ? null
-          : this.movieService.getMovie(movieID);
+        if (!isNaN(movieID)) {
+          // Fixed the logic - was checking isNaN but should check !isNaN
+          this.movie$ = from(this.movieService.getMovie(movieID));
+        }
       })
     );
 
+    // Subscribe to route data for editing mode
     this.subscription.add(
       this.activatedRoute.data.subscribe((data) => {
-        this.isEditing = data["editing"];
+        this.isEditing = data["editing"] || false;
       })
     );
   }
