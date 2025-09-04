@@ -1,22 +1,8 @@
 import { Component } from "@angular/core";
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  Validators,
-} from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { MovieService } from "../services/movie.service";
-
-function notEmpty(control: AbstractControl): ValidationErrors | null {
-  const value = control.value;
-  return value === null ||
-    value === undefined ||
-    String(value).trim().length === 0
-    ? { notEmpty: true }
-    : null;
-}
+import { notEmpty } from "../utils/validators";
 
 @Component({
   selector: "app-new-movie-page",
@@ -29,11 +15,11 @@ function notEmpty(control: AbstractControl): ValidationErrors | null {
       <label for="director">Diretor</label><br />
       <input id="director" type="text" formControlName="director" /><br />
 
-      <label for="release-date">Data de lançamento</label><br />
+      <label for="release-year">Ano de lançamento</label><br />
       <input
-        id="release-date"
-        type="date"
-        formControlName="releaseDate"
+        id="release-year"
+        type="number"
+        formControlName="releaseYear"
       /><br />
 
       <label for="synopsis">Sinopse</label><br />
@@ -59,7 +45,7 @@ export class NewMoviePageComponent {
     this.form = this.fb.group({
       title: ["", [Validators.required, notEmpty]],
       director: ["", [Validators.required, notEmpty]],
-      releaseDate: ["", Validators.required],
+      releaseYear: ["", [Validators.required, Validators.min(1888)]],
       synopsis: ["", [Validators.required, notEmpty]],
       posterURL: ["", [Validators.required, notEmpty]],
     });
@@ -69,13 +55,13 @@ export class NewMoviePageComponent {
     if (!this.form.valid) {
       return;
     }
-    const { title, director, releaseDate, synopsis, posterURL } =
+    const { title, director, releaseYear, synopsis, posterURL } =
       this.form.value;
 
     await this.movieService.addNewMovie({
       title: title.trim(),
       director: director.trim(),
-      releaseDate,
+      releaseYear: Number(releaseYear),
       synopsis: synopsis.trim(),
       posterURL: posterURL.trim(),
     });

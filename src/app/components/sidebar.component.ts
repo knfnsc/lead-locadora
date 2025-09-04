@@ -23,12 +23,16 @@ import { Router } from "@angular/router";
   `,
   styles: [
     `
-      aside {
+      :host {
         position: fixed;
         top: 0;
         left: 0;
         width: 200px;
         height: 100vh;
+      }
+
+      aside {
+        height: 100%;
         background-color: #f0f0f0;
         padding: 1rem;
       }

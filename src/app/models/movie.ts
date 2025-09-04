@@ -2,7 +2,7 @@ export interface Movie {
   readonly id: number;
   title: string;
   director: string;
-  releaseDate: Date;
+  releaseYear: number;
   synopsis: string;
   posterURL: string;
 }

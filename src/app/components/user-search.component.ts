@@ -21,12 +21,10 @@ import { UserService } from "../services/user.service";
         <h2 [routerLink]="[user.id]">
           {{ user.name }}
         </h2>
-        <button *ngIf="isAdmin$ | async" [routerLink]="[user.id, 'edit']">
+        <button *ngIf="!user.isAdmin" [routerLink]="[user.id, 'edit']">
           Editar
         </button>
-        <button *ngIf="isAdmin$ | async" (click)="onDelete(user)">
-          Excluir
-        </button>
+        <button *ngIf="!user.isAdmin" (click)="onDelete(user)">Excluir</button>
       </li>
     </ol>
     <p *ngIf="filteredUsers.length === 0">Nenhum usuário encontrado</p>
@@ -70,9 +68,6 @@ export class UserSearchComponent implements OnInit {
   filteredUsers: User[] = [];
   searchControl = new FormControl("");
 
-  isAdmin$!: Observable<boolean>;
-  isEditing = false;
-
   constructor(
     private authService: AuthService,
     private userService: UserService,
@@ -80,8 +75,6 @@ export class UserSearchComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.isAdmin$ = from(this.authService.isAdmin());
-
     this.users = await this.userService.getUsers();
     this.filteredUsers = this.users;
   }

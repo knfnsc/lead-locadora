@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -11,6 +11,7 @@ import { UserDetailsComponent } from "./components/user-details.component";
 import { MovieDetailsComponent } from "./components/movie-details.component";
 import { SidebarComponent } from "./components/sidebar.component";
 import { NewMoviePageComponent } from "./components/new-movie-page.component";
+import { PageNotFoundComponent } from "./components/page-not-found.component";
 
 @NgModule({
   declarations: [
@@ -22,8 +23,9 @@ import { NewMoviePageComponent } from "./components/new-movie-page.component";
     MovieDetailsComponent,
     SidebarComponent,
     NewMoviePageComponent,
+    PageNotFoundComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule],
   providers: [],
   bootstrap: [AppComponent],
 })

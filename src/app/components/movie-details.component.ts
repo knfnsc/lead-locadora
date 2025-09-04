@@ -11,15 +11,15 @@ import { AuthService } from "../services/auth.service";
     <app-sidebar></app-sidebar>
     <ng-container *ngIf="movie$ | async as movie; else movieNotFound">
       <img [alt]="movie.title" [src]="movie.posterURL" />
-      <h1>{{ movie.title }}</h1>
-      <h2>{{ movie.director }}</h2>
-      <h3>{{ movie.releaseDate | date }}</h3>
-      <p>{{ movie.synopsis }}</p>
-      <button
-        *ngIf="isAdmin$ | async"
-        [routerLink]="[isEditing ? '..' : 'edit']"
-        (click)="onEdit()"
-      >
+      <input type="text" [(ngModel)]="movie.title" [disabled]="!isEditing" />
+      <input type="text" [(ngModel)]="movie.director" [disabled]="!isEditing" />
+      <input
+        type="number"
+        [(ngModel)]="movie.releaseYear"
+        [disabled]="!isEditing"
+      />
+      <textarea [(ngModel)]="movie.synopsis" [disabled]="!isEditing"></textarea>
+      <button *ngIf="isAdmin$ | async" (click)="onEdit(movie)">
         {{ !isEditing ? "Editar" : "Parar de editar" }}
       </button>
       <button *ngIf="isAdmin$ | async" (click)="onDelete(movie)">
@@ -69,12 +69,22 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  onEdit(): void {
+  onEdit(movie: Movie): void {
     this.isEditing = !this.isEditing;
+    if (this.isEditing) {
+      this.router.navigate(["edit"], { relativeTo: this.activatedRoute });
+    } else {
+      this.router.navigate([".."], { relativeTo: this.activatedRoute });
+      this.onSave(movie);
+    }
   }
 
   async onDelete(movie: Movie): Promise<void> {
     await this.movieService.deleteMovie(movie.id);
     this.router.navigate(["/"]);
+  }
+
+  private async onSave(movie: Movie): Promise<void> {
+    await this.movieService.updateMovie(movie);
   }
 }

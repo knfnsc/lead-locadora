@@ -177,7 +177,26 @@ table {
     color: #fff !important;
     outline: none !important;
 
-    &:not(div, ul, ol) {
+    &:not(
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        div,
+        aside,
+        nav,
+        ul,
+        ol,
+        li,
+        section,
+        article,
+        header,
+        footer,
+        main
+      ) {
       border: 2px solid #fff;
 
       &:hover,

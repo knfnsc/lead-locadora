@@ -8,6 +8,7 @@ import { NewMoviePageComponent } from "./components/new-movie-page.component";
 import { MovieDetailsComponent } from "./components/movie-details.component";
 import { UserSearchComponent } from "./components/user-search.component";
 import { UserDetailsComponent } from "./components/user-details.component";
+import { PageNotFoundComponent } from "./components/page-not-found.component";
 
 const routes: Routes = [
   {
@@ -16,6 +17,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
+  {
+    path: "movies",
+    redirectTo: "",
+    pathMatch: "full",
+  },
   {
     path: "movies/new",
     component: NewMoviePageComponent,
@@ -39,6 +45,7 @@ const routes: Routes = [
     path: "users",
     component: UserSearchComponent,
     canActivate: [AuthGuard, AdminGuard],
+    pathMatch: "full",
   },
   {
     path: "users/:id",
@@ -60,7 +67,9 @@ const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: "",
+    component: PageNotFoundComponent,
+    canActivate: [AuthGuard],
+    pathMatch: "full",
   },
 ];
 
