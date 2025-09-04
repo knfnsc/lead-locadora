@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable, from } from "rxjs";
 import { AuthService } from "../services/auth.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-sidebar",
@@ -55,7 +56,7 @@ import { AuthService } from "../services/auth.service";
 export class SidebarComponent implements OnInit {
   isAdmin$!: Observable<boolean>;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.isAdmin$ = from(this.authService.isAdmin());
@@ -63,5 +64,6 @@ export class SidebarComponent implements OnInit {
 
   onLogout(): void {
     this.authService.logout();
+    this.router.navigate(["/login"]);
   }
 }

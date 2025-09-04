@@ -10,8 +10,9 @@ import { MovieService } from "../services/movie.service";
   selector: "app-home",
   template: `
     <app-sidebar></app-sidebar>
-    <ul class="movies" *ngIf="movies$ | async as movies">
-      <li class="card" *ngFor="let movie of movies; trackBy: trackByMovieID">
+
+    <ul *ngIf="movies$ | async as movies">
+      <li *ngFor="let movie of movies">
         <img
           [routerLink]="['/movies', movie.id]"
           [src]="movie.posterURL"
@@ -33,26 +34,25 @@ import { MovieService } from "../services/movie.service";
         </div>
       </li>
     </ul>
-    <div *ngIf="(movies$ | async)?.length === 0">
+    <ng-container *ngIf="(movies$ | async)?.length === 0">
       <p>Nenhum filme encontrado</p>
-    </div>
+    </ng-container>
   `,
   styles: [
     `
-      .movies {
+      ul {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, 200px);
         gap: 1rem;
         margin-left: 200px;
       }
 
-      .card {
-        position: relative;
-        aspect-ratio: 27 / 40;
+      li {
         width: 100%;
         height: 100%;
 
         & > img {
+          aspect-ratio: 27 / 40;
           width: 100%;
           height: calc(100% - 1.5rem);
           border: 1px solid #ccc;
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit {
   movies$!: Observable<Movie[]>;
   isAdmin$!: Observable<boolean>;
 
-  userFavoriteID: number | undefined;
+  userFavoriteID?: number;
 
   constructor(
     private authService: AuthService,
@@ -84,10 +84,6 @@ export class HomeComponent implements OnInit {
     this.userFavoriteID = (
       (await this.authService.getCurrentUser()) as RegularUser
     ).favoriteID;
-  }
-
-  trackByMovieID(_: number, movie: Movie): number {
-    return movie.id;
   }
 
   async onDelete(movie: Movie): Promise<void> {

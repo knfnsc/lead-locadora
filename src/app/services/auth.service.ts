@@ -9,7 +9,7 @@ import { User } from "../models/user";
 export class AuthService {
   private activeToken: string;
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(private userService: UserService) {
     this.activeToken = sessionStorage.getItem("token") || "";
   }
 
@@ -31,14 +31,13 @@ export class AuthService {
 
     this.activeToken = userData.token;
     sessionStorage.setItem("token", this.activeToken);
-    this.router.navigate(["/"]);
+
     return true;
   }
 
   logout(): void {
     this.activeToken = "";
     sessionStorage.setItem("token", this.activeToken);
-    this.router.navigate(["/login"]);
   }
 
   async getCurrentUser(): Promise<User | null> {

@@ -9,7 +9,6 @@ import {
 import { Router } from "@angular/router";
 import { MovieService } from "../services/movie.service";
 
-
 function notEmpty(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   return value === null ||
@@ -30,7 +29,7 @@ function notEmpty(control: AbstractControl): ValidationErrors | null {
       <label for="director">Diretor</label><br />
       <input id="director" type="text" formControlName="director" /><br />
 
-      <label for="release-date">Data de lançamento*</label><br />
+      <label for="release-date">Data de lançamento</label><br />
       <input
         id="release-date"
         type="date"

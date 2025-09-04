@@ -9,7 +9,7 @@ import { AuthService } from "../services/auth.service";
   selector: "app-movie-details",
   template: `
     <app-sidebar></app-sidebar>
-    <div *ngIf="movie$ | async as movie; else movieNotFound">
+    <ng-container *ngIf="movie$ | async as movie; else movieNotFound">
       <img [alt]="movie.title" [src]="movie.posterURL" />
       <h1>{{ movie.title }}</h1>
       <h2>{{ movie.director }}</h2>
@@ -25,7 +25,7 @@ import { AuthService } from "../services/auth.service";
       <button *ngIf="isAdmin$ | async" (click)="onDelete(movie)">
         Deletar
       </button>
-    </div>
+    </ng-container>
     <ng-template #movieNotFound>
       <p>Ih, esse filme aí eu não conheço...</p>
     </ng-template>

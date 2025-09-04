@@ -1,8 +1,14 @@
-import { Component } from "@angular/core";
+import { Component, Inject } from "@angular/core";
+import { DOCUMENT } from "@angular/common";
 
 @Component({
   selector: "app-root",
-  template: ` <router-outlet></router-outlet> `,
+  template: `
+    <button id="high-contrast-toggle" (click)="onHighContrastToggle()">
+      C
+    </button>
+    <router-outlet></router-outlet>
+  `,
   styles: [
     `
       :host {
@@ -16,6 +22,37 @@ import { Component } from "@angular/core";
         text-align: center;
       }
     `,
+    `
+      #high-contrast-toggle {
+        position: fixed;
+        z-index: 2;
+        bottom: 1rem;
+        right: 1rem;
+      }
+    `,
   ],
 })
-export class AppComponent {}
+export class AppComponent {
+  isHighContrastOn: boolean;
+
+  constructor(@Inject(DOCUMENT) private document: Document) {
+    this.isHighContrastOn = localStorage.getItem("high-contrast") === "true";
+    if (this.isHighContrastOn) {
+      this.document.body.classList.add("high-contrast");
+    } else {
+      this.document.body.classList.remove("high-contrast");
+    }
+  }
+
+  onHighContrastToggle(): void {
+    this.isHighContrastOn = !this.isHighContrastOn;
+
+    if (this.isHighContrastOn) {
+      this.document.body.classList.add("high-contrast");
+    } else {
+      this.document.body.classList.remove("high-contrast");
+    }
+
+    localStorage.setItem("high-contrast", this.isHighContrastOn.toString());
+  }
+}

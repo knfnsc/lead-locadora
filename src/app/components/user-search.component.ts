@@ -75,7 +75,8 @@ export class UserSearchComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -96,8 +97,11 @@ export class UserSearchComponent implements OnInit {
 
   async onDelete(user: User): Promise<void> {
     await this.userService.deleteUser(user.id);
-    if (await this.authService.getCurrentUser() === user.id) {
+    const currentUser = await this.authService.getCurrentUser();
+    if (currentUser?.id === user.id) {
       await this.authService.logout();
+      this.router.navigate(["/login"]);
+      return;
     }
     this.users = await this.userService.getUsers();
     this.onSearch();

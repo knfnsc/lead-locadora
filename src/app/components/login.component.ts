@@ -78,7 +78,9 @@ export class LoginComponent implements OnInit {
   async onSubmit(): Promise<void> {
     const { user, password } = this.form.value;
 
-    if (!(await this.authService.login(user.trim(), password.trim()))) {
+    if (await this.authService.login(user.trim(), password.trim())) {
+      this.router.navigate(["/"]);
+    } else {
       this.errorMessage = "Usuário ou senha inválidos";
     }
   }
