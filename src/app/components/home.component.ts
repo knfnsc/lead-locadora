@@ -44,6 +44,7 @@ import { MovieService } from "../services/movie.service";
         display: grid;
         grid-template-columns: repeat(auto-fit, 200px);
         gap: 1rem;
+
         margin-left: 200px;
       }
 

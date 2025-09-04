@@ -150,12 +150,18 @@ table {
 // =================================================================
 
 :root {
+  /* Spacing and sizing */
+  --border-width: 2px;
+  --focus-outline-width: 3px;
+
+  /* Base properties */
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  color: #000;
+  background-color: #fff;
 
+  /* Font optimization */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -163,8 +169,14 @@ table {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Apply monospace to all elements */
 * {
   font-family: monospace;
+
+  & button {
+    padding: 4px 8px;
+    margin: 2px;
+  }
 }
 
 .high-contrast {
@@ -172,38 +184,68 @@ table {
   color: #fff;
 
   & * {
-    font-weight: bold;
+    font-weight: bold !important;
     background-color: #000 !important;
     color: #fff !important;
     outline: none !important;
+  }
 
-    &:not(
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        p,
-        div,
-        aside,
-        nav,
-        ul,
-        ol,
-        li,
-        section,
-        article,
-        header,
-        footer,
-        main
-      ) {
-      border: 2px solid #fff;
+  & h1,
+  & h2,
+  & h3,
+  & p,
+  & div,
+  & aside,
+  & nav,
+  & ul,
+  & ol,
+  & li {
+    border: none !important;
+  }
 
-      &:hover,
-      &:focus {
-        color: #ff0;
-        border: 2px solid #ff0;
-      }
+  & button,
+  & input,
+  & textarea,
+  & label {
+    border: 2px solid #fff !important;
+
+    &:hover,
+    &:focus,
+    &:focus-visible,
+    &:focus-within {
+      color: #ff0 !important;
+      border-color: #ff0 !important;
+      outline: 3px solid #ff0 !important;
+      outline-offset: 2px !important;
     }
+
+    &:active {
+      background-color: #ff0 !important;
+      color: #000 !important;
+    }
+  }
+
+  & input,
+  & textarea {
+    &:disabled {
+      opacity: 0.6 !important;
+      border-color: #666 !important;
+      color: #666 !important;
+      background-color: #333 !important;
+    }
+  }
+
+  & img {
+    border: 2px solid #fff !important;
+  }
+
+  & *:focus-visible {
+    outline: 3px solid #ff0 !important;
+    outline-offset: 2px !important;
+  }
+
+  & *::selection {
+    background-color: #ff0 !important;
+    color: #000 !important;
   }
 }

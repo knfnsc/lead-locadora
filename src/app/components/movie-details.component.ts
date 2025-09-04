@@ -13,11 +13,7 @@ import { AuthService } from "../services/auth.service";
       <img [alt]="movie.title" [src]="movie.posterURL" />
       <input type="text" [(ngModel)]="movie.title" [disabled]="!isEditing" />
       <input type="text" [(ngModel)]="movie.director" [disabled]="!isEditing" />
-      <input
-        type="number"
-        [(ngModel)]="movie.releaseYear"
-        [disabled]="!isEditing"
-      />
+      <input [(ngModel)]="movie.releaseYear" [disabled]="!isEditing" />
       <textarea [(ngModel)]="movie.synopsis" [disabled]="!isEditing"></textarea>
       <button *ngIf="isAdmin$ | async" (click)="onEdit(movie)">
         {{ !isEditing ? "Editar" : "Parar de editar" }}
@@ -30,7 +26,25 @@ import { AuthService } from "../services/auth.service";
       <p>Ih, esse filme aí eu não conheço...</p>
     </ng-template>
   `,
-  styles: [],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        width: 100%;
+      }
+
+      img {
+        aspect-ratio: 27 / 40;
+        width: 300px;
+        height: calc(100% - 1.5rem);
+        border: 1px solid #ccc;
+      }
+    `,
+  ],
 })
 export class MovieDetailsComponent implements OnInit, OnDestroy {
   movie$!: Observable<Movie | null>;
