@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, Subscription, from } from "rxjs";
+import { RegularUser } from "../models/user";
 import { Movie } from "../models/movie";
-import { MovieService } from "../services/movie.service";
 import { AuthService } from "../services/auth.service";
+import { UserService } from "../services/user.service";
+import { MovieService } from "../services/movie.service";
 
 @Component({
   selector: "app-movie-details",
@@ -15,6 +17,9 @@ import { AuthService } from "../services/auth.service";
       <input type="text" [(ngModel)]="movie.director" [disabled]="!isEditing" />
       <input [(ngModel)]="movie.releaseYear" [disabled]="!isEditing" />
       <textarea [(ngModel)]="movie.synopsis" [disabled]="!isEditing"></textarea>
+      <button *ngIf="!(isAdmin$ | async)" (click)="onFavorite(movie)">
+        {{ userFavoriteID === movie.id ? "★" : "☆" }}
+      </button>
       <button *ngIf="isAdmin$ | async" (click)="onEdit(movie)">
         {{ !isEditing ? "Editar" : "Parar de editar" }}
       </button>
@@ -50,11 +55,13 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
   movie$!: Observable<Movie | null>;
   isAdmin$!: Observable<boolean>;
   isEditing = false;
+  userFavoriteID?: number;
 
   private subscription = new Subscription();
 
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private movieService: MovieService,
     private activatedRoute: ActivatedRoute,
     private router: Router
@@ -100,5 +107,16 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
 
   private async onSave(movie: Movie): Promise<void> {
     await this.movieService.updateMovie(movie);
+  }
+
+  async onFavorite(movie: Movie): Promise<void> {
+    const user = (await this.authService.getCurrentUser()) as RegularUser;
+    const newFavorite = user.favoriteID === movie.id ? undefined : movie.id;
+
+    await this.userService.updateUser({
+      ...user,
+      favoriteID: newFavorite,
+    });
+    this.userFavoriteID = newFavorite;
   }
 }

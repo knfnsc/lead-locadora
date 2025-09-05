@@ -38,6 +38,8 @@ import { UserService } from "../services/user.service";
         font-size: 1rem;
         outline: 1px solid #c1c1c1;
         border-radius: 8px;
+
+        margin-left: 200px;
       }
 
       ol {
