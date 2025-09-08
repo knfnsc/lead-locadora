@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { Router } from "@angular/router";
-import { Observable, from } from "rxjs";
 import { User } from "../models/user";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";

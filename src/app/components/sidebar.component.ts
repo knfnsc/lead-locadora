@@ -1,56 +1,57 @@
-import { Component, OnInit } from "@angular/core";
-import { Observable, from } from "rxjs";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Observable, Subscription, filter, from, of } from "rxjs";
 import { AuthService } from "../services/auth.service";
-import { Router } from "@angular/router";
+import { NavigationEnd, Router, RouterEvent } from "@angular/router";
 
 @Component({
   selector: "app-sidebar",
   template: `
-    <div class="sidebar" [class.collapsed]="isCollapsed">
-      <button class="toggle" (click)="toggleSidebar()">
-        {{ isCollapsed ? ">" : "<" }}
-      </button>
-      <nav>
-        <button *ngIf="isAdmin$ | async" [routerLink]="['/movies/new']">
-          <span *ngIf="!isCollapsed">Novo filme</span>
-          <span *ngIf="isCollapsed">+</span>
+    <ng-container *ngIf="!isLoginPage">
+      <aside [class.collapsed]="isCollapsed">
+        <button class="toggle" (click)="toggleSidebar()">
+          {{ isCollapsed ? ">" : "<" }}
         </button>
-        <button *ngIf="isAdmin$ | async" [routerLink]="['/users']">
-          <span *ngIf="!isCollapsed">Usuários</span>
-          <span *ngIf="isCollapsed">👥</span>
-        </button>
-        <button *ngIf="!(isAdmin$ | async)" [routerLink]="['/']">
-          <span *ngIf="!isCollapsed">Ver novidades</span>
-          <span *ngIf="isCollapsed">🏠</span>
-        </button>
-        <button class="logout" (click)="onLogout()">
-          <span *ngIf="!isCollapsed">Sair</span>
-          <span *ngIf="isCollapsed">🚪</span>
-        </button>
-      </nav>
-    </div>
+        <nav>
+          <button *ngIf="isAdmin$ | async" [routerLink]="['/movies/new']">
+            {{ !isCollapsed ? "Novo filme" : "+" }}
+          </button>
+          <button *ngIf="isAdmin$ | async" [routerLink]="['/users']">
+            {{ !isCollapsed ? "Usuários" : "👥" }}
+          </button>
+          <button *ngIf="!(isAdmin$ | async)" [routerLink]="['/']">
+            {{ !isCollapsed ? "Ver novidades" : "🏠" }}
+          </button>
+          <button class="logout" (click)="onLogout()">
+            {{ !isCollapsed ? "Sair" : "🚪" }}
+          </button>
+        </nav>
+      </aside>
+    </ng-container>
   `,
   styles: [
     `
       :host {
-        display: block;
-        position: fixed;
+        height: 100vh;
         top: 0;
         left: 0;
-        height: 100vh;
+
         z-index: 1000;
+        display: block;
+        position: fixed;
       }
 
-      .sidebar {
+      aside {
+        position: relative;
         width: 200px;
         height: 100%;
-        background-color: #f0f0f0;
         padding: 1rem;
+
+        background-color: #f0f0f0;
+
         transition: width 0.3s ease;
-        position: relative;
       }
 
-      .sidebar.collapsed {
+      aside.collapsed {
         width: 60px;
         padding: 1rem 0.5rem;
       }
@@ -59,13 +60,17 @@ import { Router } from "@angular/router";
         position: absolute;
         top: 10px;
         right: 10px;
+
         background: #ddd;
         border: none;
         border-radius: 50%;
+
         width: 30px;
         height: 30px;
+
         cursor: pointer;
         font-size: 14px;
+
         display: flex;
         align-items: center;
         justify-content: center;
@@ -73,24 +78,27 @@ import { Router } from "@angular/router";
 
       nav {
         height: calc(100% - 50px);
+        margin-top: 50px;
+
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 1rem;
-        margin-top: 50px;
       }
 
       nav > button {
         width: 100%;
+        min-height: 40px;
         padding: 0.5rem;
+
         border: none;
         background: #e0e0e0;
         border-radius: 4px;
         cursor: pointer;
+
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 40px;
       }
 
       nav > button:hover {
@@ -107,23 +115,43 @@ import { Router } from "@angular/router";
     `,
   ],
 })
-export class SidebarComponent implements OnInit {
-  isAdmin$!: Observable<boolean>;
+export class SidebarComponent implements OnInit, OnDestroy {
+  isAdmin$: Observable<boolean> = of(false);
   isCollapsed = false;
+  isLoginPage: boolean = true;
+
+  private subscription = new Subscription();
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    this.isAdmin$ = from(this.authService.isAdmin());
+    this.subscription.add(
+      this.router.events
+        .pipe(
+          filter(
+            (event): event is NavigationEnd => event instanceof NavigationEnd
+          )
+        )
+        .subscribe(() => {
+          this.isLoginPage = this.router.url === "/login";
+          this.isAdmin$ = from(this.authService.isAdmin());
+        })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
-    console.log("Toggled:", this.isCollapsed); // Debug log
   }
 
   onLogout(): void {
     this.authService.logout();
+    this.isAdmin$ = of(false);
+
     this.router.navigate(["/login"]);
+    this.isLoginPage = true;
   }
 }

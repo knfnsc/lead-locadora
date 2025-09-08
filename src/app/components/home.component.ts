@@ -9,8 +9,6 @@ import { MovieService } from "../services/movie.service";
 @Component({
   selector: "app-home",
   template: `
-    <app-sidebar></app-sidebar>
-
     <ul *ngIf="movies$ | async as movies">
       <li *ngFor="let movie of movies">
         <img
@@ -55,7 +53,7 @@ import { MovieService } from "../services/movie.service";
         & > img {
           aspect-ratio: 27 / 40;
           width: 100%;
-          height: calc(100% - 1.5rem);
+          height: calc(100% - 2.5rem);
           border: 1px solid #ccc;
         }
       }

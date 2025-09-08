@@ -4,10 +4,13 @@ import { DOCUMENT } from "@angular/common";
 @Component({
   selector: "app-root",
   template: `
+    <app-sidebar></app-sidebar>
+    <main>
+      <router-outlet></router-outlet>
+    </main>
     <button id="high-contrast-toggle" (click)="onHighContrastToggle()">
       C
     </button>
-    <router-outlet></router-outlet>
   `,
   styles: [
     `

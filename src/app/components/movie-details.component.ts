@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Observable, Subscription, from } from "rxjs";
+import { Observable, Subscription, from, of } from "rxjs";
 import { RegularUser } from "../models/user";
 import { Movie } from "../models/movie";
 import { AuthService } from "../services/auth.service";
@@ -10,7 +10,6 @@ import { MovieService } from "../services/movie.service";
 @Component({
   selector: "app-movie-details",
   template: `
-    <app-sidebar></app-sidebar>
     <ng-container *ngIf="movie$ | async as movie; else movieNotFound">
       <img [alt]="movie.title" [src]="movie.posterURL" />
       <input type="text" [(ngModel)]="movie.title" [disabled]="!isEditing" />
@@ -18,7 +17,7 @@ import { MovieService } from "../services/movie.service";
       <input [(ngModel)]="movie.releaseYear" [disabled]="!isEditing" />
       <textarea [(ngModel)]="movie.synopsis" [disabled]="!isEditing"></textarea>
       <button *ngIf="!(isAdmin$ | async)" (click)="onFavorite(movie)">
-        {{ userFavoriteID === movie.id ? "★" : "☆" }}
+        {{ (userFavoriteID$ | async) === movie.id ? "★" : "☆" }}
       </button>
       <button *ngIf="isAdmin$ | async" (click)="onEdit(movie)">
         {{ !isEditing ? "Editar" : "Parar de editar" }}
@@ -48,14 +47,39 @@ import { MovieService } from "../services/movie.service";
         height: calc(100% - 1.5rem);
         border: 1px solid #ccc;
       }
+
+      input[disabled],
+      textarea[disabled] {
+        background: transparent;
+        border: 2px solid transparent;
+        outline: none;
+      }
+
+      input {
+        font-size: 1.5rem;
+        font-weight: bolder;
+        text-align: center;
+
+        width: 400px;
+      }
+
+      textarea {
+        width: 600px;
+        height: 200px;
+
+        font-size: 1rem;
+        padding: 0.5rem;
+
+        resize: none;
+      }
     `,
   ],
 })
 export class MovieDetailsComponent implements OnInit, OnDestroy {
   movie$!: Observable<Movie | null>;
   isAdmin$!: Observable<boolean>;
+  userFavoriteID$!: Observable<number | undefined>;
   isEditing = false;
-  userFavoriteID?: number;
 
   private subscription = new Subscription();
 
@@ -69,6 +93,7 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isAdmin$ = from(this.authService.isAdmin());
+    this.userFavoriteID$ = from(this.getUserFavoriteID());
 
     this.subscription.add(
       this.activatedRoute.params.subscribe((params) => {
@@ -117,6 +142,11 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
       ...user,
       favoriteID: newFavorite,
     });
-    this.userFavoriteID = newFavorite;
+    this.userFavoriteID$ = of(newFavorite);
+  }
+
+  async getUserFavoriteID(): Promise<number | undefined> {
+    const user = (await this.authService.getCurrentUser()) as RegularUser;
+    return user.favoriteID;
   }
 }

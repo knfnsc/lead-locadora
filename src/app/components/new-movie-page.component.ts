@@ -7,7 +7,6 @@ import { notEmpty } from "../utils/validators";
 @Component({
   selector: "app-new-movie-page",
   template: `
-    <app-sidebar></app-sidebar>
     <form [formGroup]="form" (ngSubmit)="onCreate()">
       <label for="title">Título</label><br />
       <input id="title" type="text" formControlName="title" /><br />

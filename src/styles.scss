@@ -160,7 +160,6 @@ table {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  
 }
 
 * {
@@ -191,16 +190,15 @@ table {
   & div,
   & aside,
   & nav,
-  & ul,
-  & ol,
-  & li {
+  & ul {
     border: none !important;
   }
 
   & button,
   & input,
   & textarea,
-  & label {
+  & label,
+  & li {
     border: 2px solid #fff !important;
 
     &:hover,
