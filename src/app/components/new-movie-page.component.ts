@@ -50,14 +50,14 @@ export class NewMoviePageComponent {
     });
   }
 
-  async onCreate(): Promise<void> {
+  onCreate(): void {
     if (!this.form.valid) {
       return;
     }
     const { title, director, releaseYear, synopsis, posterURL } =
       this.form.value;
 
-    await this.movieService.addNewMovie({
+    this.movieService.addNewMovie({
       title: title.trim(),
       director: director.trim(),
       releaseYear: Number(releaseYear),

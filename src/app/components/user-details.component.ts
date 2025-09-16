@@ -121,7 +121,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
         this.favorite$ = this.user$.pipe(
           switchMap((user) => {
             if (user && !user.isAdmin && user.favoriteID) {
-              return from(this.movieService.getMovie(user.favoriteID));
+              return this.movieService.getMovie(user.favoriteID);
             }
             return of(null);
           })

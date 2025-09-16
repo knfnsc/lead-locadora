@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.movies$ = from(this.movieService.getMovies());
+    this.movies$ = this.movieService.getMovies();
     this.isAdmin$ = from(this.authService.isAdmin());
     this.userFavoriteID = (
       (await this.authService.getCurrentUser()) as RegularUser
@@ -86,8 +86,8 @@ export class HomeComponent implements OnInit {
   }
 
   async onDelete(movie: Movie): Promise<void> {
-    await this.movieService.deleteMovie(movie.id);
-    this.movies$ = from(this.movieService.getMovies());
+    this.movieService.deleteMovie(movie.id);
+    this.movies$ = this.movieService.getMovies();
   }
 
   async onFavorite(movie: Movie): Promise<void> {

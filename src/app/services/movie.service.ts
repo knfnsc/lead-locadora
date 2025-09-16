@@ -1,30 +1,62 @@
 import { Injectable } from "@angular/core";
 import { Movie } from "../models/movie";
 import { DatabaseService } from "./database.service";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+
+const API_URL = "http://localhost:8080";
 
 @Injectable({
   providedIn: "root",
 })
 export class MovieService {
-  constructor(private db: DatabaseService) {}
+  constructor(private http: HttpClient) {}
 
-  async addNewMovie(movie: Omit<Movie, "id">): Promise<number> {
-    return (await this.db.movies.add(movie as Movie)) as number;
+  addNewMovie(movie: Omit<Movie, "id">): Observable<Movie> {
+    const response = this.http.post<Movie>(API_URL + "/movies", movie, {
+      headers: { "Access-Control-Allow-Origin": API_URL },
+      observe: "body",
+      responseType: "json",
+    });
+
+    return response;
   }
 
-  async getMovies(): Promise<Movie[]> {
-    return await this.db.movies.toArray();
+  getMovies(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(API_URL + "/movies", {
+      headers: { "Access-Control-Allow-Origin": API_URL },
+      observe: "body",
+      responseType: "json",
+    });
   }
 
-  async getMovie(id: number): Promise<Movie | null> {
-    return (await this.db.movies.get(id)) || null;
+  getMovie(id: number): Observable<Movie | null> {
+    return this.http.get<Movie>(API_URL + "/movies/" + id, {
+      headers: { "Access-Control-Allow-Origin": API_URL },
+      observe: "body",
+      responseType: "json",
+    });
   }
 
-  async updateMovie(updatedMovie: Movie): Promise<void> {
-    await this.db.movies.put(updatedMovie);
+  updateMovie(updatedMovie: Movie): Observable<Movie> {
+    return this.http.put<Movie>(
+      API_URL + "/movies/" + updatedMovie.id,
+      updatedMovie,
+      {
+        headers: {
+          "Access-Control-Allow-Origin": API_URL,
+        },
+        observe: "body",
+        responseType: "json",
+      }
+    );
   }
 
-  async deleteMovie(id: number): Promise<void> {
-    await this.db.movies.delete(id);
+  deleteMovie(id: number): void {
+    this.http.delete(API_URL + "/movies/" + id, {
+      headers: { "Access-Control-Allow-Origin": API_URL },
+      observe: "body",
+      responseType: "json",
+    });
   }
 }

@@ -99,7 +99,7 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
       this.activatedRoute.params.subscribe((params) => {
         const movieID = parseInt(params["id"]);
         if (!isNaN(movieID)) {
-          this.movie$ = from(this.movieService.getMovie(movieID));
+          this.movie$ = this.movieService.getMovie(movieID);
         }
       })
     );
@@ -125,13 +125,13 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onDelete(movie: Movie): Promise<void> {
-    await this.movieService.deleteMovie(movie.id);
+  onDelete(movie: Movie): void {
+    this.movieService.deleteMovie(movie.id);
     this.router.navigate(["/"]);
   }
 
-  private async onSave(movie: Movie): Promise<void> {
-    await this.movieService.updateMovie(movie);
+  private onSave(movie: Movie): void {
+    this.movieService.updateMovie(movie);
   }
 
   async onFavorite(movie: Movie): Promise<void> {
