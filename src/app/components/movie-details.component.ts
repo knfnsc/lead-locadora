@@ -1,11 +1,9 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, Subscription, from, of } from "rxjs";
-import { RegularUser } from "../models/user";
-import { Movie } from "../models/movie";
-import { AuthService } from "../services/auth.service";
-import { UserService } from "../services/user.service";
+import { Movie } from "../models/movie.model";
 import { MovieService } from "../services/movie.service";
+import { StateService } from "../services/state.service";
 
 @Component({
   selector: "app-movie-details",
@@ -16,15 +14,12 @@ import { MovieService } from "../services/movie.service";
       <input type="text" [(ngModel)]="movie.director" [disabled]="!isEditing" />
       <input [(ngModel)]="movie.releaseYear" [disabled]="!isEditing" />
       <textarea [(ngModel)]="movie.synopsis" [disabled]="!isEditing"></textarea>
-      <button *ngIf="!(isAdmin$ | async)" (click)="onFavorite(movie)">
-        {{ (userFavoriteID$ | async) === movie.id ? "★" : "☆" }}
-      </button>
-      <button *ngIf="isAdmin$ | async" (click)="onEdit(movie)">
-        {{ !isEditing ? "Editar" : "Parar de editar" }}
-      </button>
-      <button *ngIf="isAdmin$ | async" (click)="onDelete(movie)">
-        Deletar
-      </button>
+      <div *ngIf="isAdmin">
+        <button (click)="onEdit(movie)">
+          {{ !isEditing ? "Editar" : "Parar de editar" }}
+        </button>
+        <button (click)="onDelete(movie)">Deletar</button>
+      </div>
     </ng-container>
     <ng-template #movieNotFound>
       <p>Ih, esse filme aí eu não conheço...</p>
@@ -77,24 +72,21 @@ import { MovieService } from "../services/movie.service";
 })
 export class MovieDetailsComponent implements OnInit, OnDestroy {
   movie$!: Observable<Movie | null>;
-  isAdmin$!: Observable<boolean>;
-  userFavoriteID$!: Observable<number | undefined>;
+
+  isAdmin = !!this.stateService.getUser()?.isAdmin;
+
   isEditing = false;
 
   private subscription = new Subscription();
 
   constructor(
-    private authService: AuthService,
-    private userService: UserService,
+    private stateService: StateService,
     private movieService: MovieService,
     private activatedRoute: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.isAdmin$ = from(this.authService.isAdmin());
-    this.userFavoriteID$ = from(this.getUserFavoriteID());
-
     this.subscription.add(
       this.activatedRoute.params.subscribe((params) => {
         const movieID = parseInt(params["id"]);
@@ -126,27 +118,11 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
   }
 
   onDelete(movie: Movie): void {
-    this.movieService.deleteMovie(movie.id);
+    this.movieService.deleteMovie(movie.id).subscribe();
     this.router.navigate(["/"]);
   }
 
   private onSave(movie: Movie): void {
-    this.movieService.updateMovie(movie);
-  }
-
-  async onFavorite(movie: Movie): Promise<void> {
-    const user = (await this.authService.getCurrentUser()) as RegularUser;
-    const newFavorite = user.favoriteID === movie.id ? undefined : movie.id;
-
-    await this.userService.updateUser({
-      ...user,
-      favoriteID: newFavorite,
-    });
-    this.userFavoriteID$ = of(newFavorite);
-  }
-
-  async getUserFavoriteID(): Promise<number | undefined> {
-    const user = (await this.authService.getCurrentUser()) as RegularUser;
-    return user.favoriteID;
+    this.movieService.updateMovie(movie).subscribe();
   }
 }

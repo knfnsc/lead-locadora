@@ -1,10 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { Observable, from } from "rxjs";
-import { RegularUser } from "../models/user";
-import { Movie } from "../models/movie";
-import { UserService } from "../services/user.service";
-import { AuthService } from "../services/auth.service";
+import { Observable } from "rxjs";
+import { Movie } from "../models/movie.model";
 import { MovieService } from "../services/movie.service";
+import { StateService } from "../services/state.service";
 
 @Component({
   selector: "app-home",
@@ -17,18 +15,10 @@ import { MovieService } from "../services/movie.service";
           [alt]="movie.title"
         />
         <div class="actions">
-          <button *ngIf="!(isAdmin$ | async)" (click)="onFavorite(movie)">
-            {{ userFavoriteID === movie.id ? "★" : "☆" }}
-          </button>
-          <button
-            *ngIf="isAdmin$ | async"
-            [routerLink]="['/movies', movie.id, 'edit']"
-          >
+          <button *ngIf="isAdmin" [routerLink]="['/movies', movie.id, 'edit']">
             Editar
           </button>
-          <button *ngIf="isAdmin$ | async" (click)="onDelete(movie)">
-            Deletar
-          </button>
+          <button *ngIf="isAdmin" (click)="onDelete(movie)">Deletar</button>
         </div>
       </li>
     </ul>
@@ -67,37 +57,20 @@ import { MovieService } from "../services/movie.service";
 })
 export class HomeComponent implements OnInit {
   movies$!: Observable<Movie[]>;
-  isAdmin$!: Observable<boolean>;
-
-  userFavoriteID?: number;
+  isAdmin!: boolean;
 
   constructor(
-    private authService: AuthService,
-    private userService: UserService,
+    private stateService: StateService,
     private movieService: MovieService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.movies$ = this.movieService.getMovies();
-    this.isAdmin$ = from(this.authService.isAdmin());
-    this.userFavoriteID = (
-      (await this.authService.getCurrentUser()) as RegularUser
-    ).favoriteID;
+    this.stateService.getUser()?.isAdmin;
   }
 
-  async onDelete(movie: Movie): Promise<void> {
+  onDelete(movie: Movie): void {
     this.movieService.deleteMovie(movie.id);
     this.movies$ = this.movieService.getMovies();
-  }
-
-  async onFavorite(movie: Movie): Promise<void> {
-    const user = (await this.authService.getCurrentUser()) as RegularUser;
-    const newFavorite = user.favoriteID === movie.id ? undefined : movie.id;
-
-    await this.userService.updateUser({
-      ...user,
-      favoriteID: newFavorite,
-    });
-    this.userFavoriteID = newFavorite;
   }
 }

@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../services/auth.service";
+import { notEmpty } from "../utils/validators";
+import { StateService } from "../services/state.service";
 
 @Component({
   selector: "app-login",
@@ -59,26 +61,27 @@ export class LoginComponent implements OnInit {
   errorMessage: string | null = null;
 
   constructor(
+    private stateService: StateService,
     private authService: AuthService,
     private fb: FormBuilder,
     private router: Router
   ) {
     this.form = this.fb.group({
-      user: ["", [Validators.required, Validators.minLength(1)]],
-      password: ["", [Validators.required, Validators.minLength(1)]],
+      user: ["", [Validators.required, notEmpty]],
+      password: ["", [Validators.required, notEmpty]],
     });
   }
 
-  async ngOnInit(): Promise<void> {
-    if (await this.authService.isAuthenticated()) {
+  ngOnInit(): void {
+    if (!!this.stateService.getUser()) {
       this.router.navigate(["/"]);
     }
   }
 
-  async onSubmit(): Promise<void> {
+  onSubmit(): void {
     const { user, password } = this.form.value;
 
-    if (await this.authService.login(user.trim(), password.trim())) {
+    if (this.authService.login(user.trim(), password.trim())) {
       this.router.navigate(["/"]);
     } else {
       this.errorMessage = "Usuário ou senha inválidos";

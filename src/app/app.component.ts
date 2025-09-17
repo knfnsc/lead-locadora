@@ -4,7 +4,6 @@ import { DOCUMENT } from "@angular/common";
 @Component({
   selector: "app-root",
   template: `
-    <app-sidebar></app-sidebar>
     <main>
       <router-outlet></router-outlet>
     </main>

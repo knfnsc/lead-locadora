@@ -6,8 +6,6 @@ import { HomeComponent } from "./components/home.component";
 import { LoginComponent } from "./components/login.component";
 import { NewMoviePageComponent } from "./components/new-movie-page.component";
 import { MovieDetailsComponent } from "./components/movie-details.component";
-import { UserSearchComponent } from "./components/user-search.component";
-import { UserDetailsComponent } from "./components/user-details.component";
 import { PageNotFoundComponent } from "./components/page-not-found.component";
 
 const routes: Routes = [
@@ -35,26 +33,6 @@ const routes: Routes = [
   {
     path: "movies/:id/edit",
     component: MovieDetailsComponent,
-    canActivate: [AuthGuard, AdminGuard],
-    data: {
-      editing: true,
-    },
-  },
-
-  {
-    path: "users",
-    component: UserSearchComponent,
-    canActivate: [AuthGuard, AdminGuard],
-    pathMatch: "full",
-  },
-  {
-    path: "users/:id",
-    component: UserDetailsComponent,
-    canActivate: [AuthGuard, AdminGuard],
-  },
-  {
-    path: "users/:id/edit",
-    component: UserDetailsComponent,
     canActivate: [AuthGuard, AdminGuard],
     data: {
       editing: true,
