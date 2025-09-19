@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { Observable } from "rxjs";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { Movie } from "../models/movie.model";
 import { MovieService } from "../services/movie.service";
 import { StateService } from "../services/state.service";
@@ -7,24 +7,29 @@ import { StateService } from "../services/state.service";
 @Component({
   selector: "app-home",
   template: `
-    <ul *ngIf="movies$ | async as movies">
-      <li *ngFor="let movie of movies">
-        <img
-          [routerLink]="['/movies', movie.id]"
-          [src]="movie.posterURL"
-          [alt]="movie.title"
-        />
-        <div class="actions">
-          <button *ngIf="isAdmin" [routerLink]="['/movies', movie.id, 'edit']">
-            Editar
-          </button>
-          <button *ngIf="isAdmin" (click)="onDelete(movie)">Deletar</button>
-        </div>
-      </li>
-    </ul>
-    <ng-container *ngIf="(movies$ | async)?.length === 0">
-      <p>Nenhum filme encontrado</p>
+    <ng-container *ngIf="movies$ | async as movies; else moviesNotFound">
+      <ul>
+        <li *ngFor="let movie of movies">
+          <img
+            [routerLink]="['/movies', movie.id]"
+            [src]="movie.posterURL"
+            [alt]="movie.title"
+          />
+          <div class="actions">
+            <button
+              *ngIf="isAdmin"
+              [routerLink]="['/movies', movie.id, 'edit']"
+            >
+              Editar
+            </button>
+            <button *ngIf="isAdmin" (click)="onDelete(movie)">Deletar</button>
+          </div>
+        </li>
+      </ul>
     </ng-container>
+    <ng-template #moviesNotFound>
+      <p>Nenhum filme encontrado</p>
+    </ng-template>
   `,
   styles: [
     `
@@ -55,8 +60,9 @@ import { StateService } from "../services/state.service";
     `,
   ],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   movies$!: Observable<Movie[]>;
+  unsubscribe$!: Subject<void>;
   isAdmin!: boolean;
 
   constructor(
@@ -65,12 +71,27 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.movies$ = this.movieService.getMovies();
-    this.stateService.getUser()?.isAdmin;
+    this.unsubscribe$ = new Subject<void>();
+    this.movies$ = this.movieService
+      .getMovies()
+      .pipe(takeUntil(this.unsubscribe$));
+
+    this.isAdmin = !!this.stateService.getUser()?.isAdmin;
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   onDelete(movie: Movie): void {
-    this.movieService.deleteMovie(movie.id);
-    this.movies$ = this.movieService.getMovies();
+    this.movieService
+      .deleteMovie(movie.id)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe();
+
+    this.movies$ = this.movieService
+      .getMovies()
+      .pipe(takeUntil(this.unsubscribe$));
   }
 }

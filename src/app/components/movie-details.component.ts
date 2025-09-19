@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Observable, Subscription, from, of } from "rxjs";
+import { Observable, Subscription, of } from "rxjs";
 import { Movie } from "../models/movie.model";
 import { MovieService } from "../services/movie.service";
 import { StateService } from "../services/state.service";
@@ -123,6 +123,8 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
   }
 
   private onSave(movie: Movie): void {
-    this.movieService.updateMovie(movie).subscribe();
+    this.movieService.updateMovie(movie).subscribe((updatedMovie) => {
+      this.movie$ = of(updatedMovie);
+    });
   }
 }
